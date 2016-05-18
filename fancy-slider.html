@@ -34,6 +34,7 @@ Example:
         width: 100px;
         display: block;
         opacity: 0.2;
+        transition: transform 0.5s;
 
       }
 
@@ -44,6 +45,12 @@ Example:
         height: 60vh;
         justify-content: space-between;
         align-items: center;
+        background-color: black;
+      }
+
+      :host ::content img[focus]{
+        opacity: 1;
+        transform: scale(2, 2);
       }
 
     </style>
@@ -68,10 +75,18 @@ Example:
         //
         // This is the point where you should make modifications to the DOM (when
         // necessary), or kick off any processes the element wants to perform.
-        console.log(this.getContentChildren());
+        var that = this;
+        this.getContentChildren().forEach(function(el){
+          el.addEventListener("mouseenter", function(ev){
+            this._toggleFocus(ev.target);
+          }.bind(that));
 
-
+          el.addEventListener("mouseout", function(ev){
+            this._toggleFocus(ev.target);
+          }.bind(that));
+        });
       },
+
 
       attached: function() {
         // `attached` fires once the element and its parents have been inserted
@@ -91,6 +106,13 @@ Example:
 
       // Element Behavior
 
+      _toggleFocus: function(el){
+        if(el.hasAttribute("focus")){
+          Polymer.dom(el).removeAttribute("focus");
+        }else if(!el.hasAttribute("focus")){
+          Polymer.dom(el).setAttribute("focus", "");
+        }
+      }
 
     });
   </script>
