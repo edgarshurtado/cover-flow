@@ -84,6 +84,7 @@ Example:
       is: 'fancy-slider',
 
       properties: {
+        
       },
 
       // Element Lifecycle
@@ -115,6 +116,8 @@ Example:
         // This is a good place to perform any work related to your element's
         // visual state or active behavior (measuring sizes, beginning animations,
         // loading resources, etc).
+
+
       },
 
       detached: function() {
@@ -132,6 +135,16 @@ Example:
         }else if(!el.hasAttribute("focus")){
           Polymer.dom(el).setAttribute("focus", "");
         }
+      },
+
+      // Helper functions
+
+      _isFocusable(el, scrollLeft){
+        var elementLeft = el.getBoundingClientRect().left;
+        var nextElementLeft = el.nextElementSibling.getBoundingClientRect().left || null;
+
+        return elementLeft <= scrollLeft
+          && (nextElementLeft >= scrollLeft || nextElementLeft === null);
       }
 
     });
