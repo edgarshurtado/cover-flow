@@ -70,10 +70,10 @@ Example:
       }
 
     </style>
-    <div class="wrapper_outter">
+    <div class="wrapper_outter" id="wrapperOutter" on-scroll="_handleScroll">
       <div class="wrapper_inner">
         <div class="wrapper_images">
-          <content></content>
+          <content id="images"></content>
         </div>
       </div>
     </div>
@@ -84,7 +84,8 @@ Example:
       is: 'fancy-slider',
 
       properties: {
-        
+        _baseline: Number
+
       },
 
       // Element Lifecycle
@@ -118,6 +119,8 @@ Example:
         // loading resources, etc).
 
 
+        this._baseline = this._calculateBaseLine();
+        this._leftMarginBaseline = this._calculateLeftMarginBaseline();
       },
 
       detached: function() {
@@ -145,6 +148,31 @@ Example:
 
         return elementLeft <= scrollLeft
           && (nextElementLeft >= scrollLeft || nextElementLeft === null);
+      },
+
+      _handleScroll: function(){
+
+        var horizontalSelectPosition = this.$.wrapperOutter.scrollLeft + this._leftMarginBaseline;
+        var elOnFocus = document.elementFromPoint(horizontalSelectPosition, this._baseline);
+
+        if(elOnFocus.nodeName === "IMG"){
+          console.log(elOnFocus);
+        }
+      },
+
+      _calculateBaseLine: function(){
+        var exampleImgStyles = this._getFirstImageBoundingClientRect();
+        return exampleImgStyles.top + exampleImgStyles.height/2;
+      },
+
+      _calculateLeftMarginBaseline(){
+        var exampleImgStyles = this._getFirstImageBoundingClientRect();
+        return exampleImgStyles.left;
+
+      },
+
+      _getFirstImageBoundingClientRect: function(){
+        return this.queryEffectiveChildren("img").getBoundingClientRect();
       }
 
     });
