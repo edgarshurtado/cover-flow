@@ -97,16 +97,6 @@ Example:
         //
         // This is the point where you should make modifications to the DOM (when
         // necessary), or kick off any processes the element wants to perform.
-        var that = this;
-        this.getContentChildren().forEach(function(el){
-          el.addEventListener("mouseenter", function(ev){
-            this._toggleFocus(ev.target);
-          }.bind(that));
-
-          el.addEventListener("mouseout", function(ev){
-            this._toggleFocus(ev.target);
-          }.bind(that));
-        });
       },
 
 
@@ -120,7 +110,7 @@ Example:
 
 
         this._baseline = this._calculateBaseLine();
-        this._leftMarginBaseline = this._calculateLeftMarginBaseline();
+        this._centerOfDisplay = window.innerWidth / 2;
       },
 
       detached: function() {
@@ -132,43 +122,36 @@ Example:
 
       // Element Behavior
 
+      _handleScroll: function(){
+
+        this._oldOnFocus = this._oldOnFocus || null;
+
+        var horizontalSelectPosition = this._centerOfDisplay;
+        var elOnFocus = document.elementFromPoint(horizontalSelectPosition, this._baseline);
+
+        if(elOnFocus.nodeName === "IMG" && this._oldOnFocus !== elOnFocus){
+          this._toggleFocus(this._oldOnFocus);
+          this._toggleFocus(elOnFocus);
+          this._oldOnFocus = elOnFocus;
+        }
+      },
+
       _toggleFocus: function(el){
-        if(el.hasAttribute("focus")){
-          Polymer.dom(el).removeAttribute("focus");
-        }else if(!el.hasAttribute("focus")){
-          Polymer.dom(el).setAttribute("focus", "");
+        if(el !== null){
+          if(el.hasAttribute("focus")){
+            Polymer.dom(el).removeAttribute("focus");
+          }else if(!el.hasAttribute("focus")){
+            Polymer.dom(el).setAttribute("focus", "");
+          }
         }
       },
 
       // Helper functions
 
-      _isFocusable(el, scrollLeft){
-        var elementLeft = el.getBoundingClientRect().left;
-        var nextElementLeft = el.nextElementSibling.getBoundingClientRect().left || null;
-
-        return elementLeft <= scrollLeft
-          && (nextElementLeft >= scrollLeft || nextElementLeft === null);
-      },
-
-      _handleScroll: function(){
-
-        var horizontalSelectPosition = this.$.wrapperOutter.scrollLeft + this._leftMarginBaseline;
-        var elOnFocus = document.elementFromPoint(horizontalSelectPosition, this._baseline);
-
-        if(elOnFocus.nodeName === "IMG"){
-          console.log(elOnFocus);
-        }
-      },
 
       _calculateBaseLine: function(){
         var exampleImgStyles = this._getFirstImageBoundingClientRect();
         return exampleImgStyles.top + exampleImgStyles.height/2;
-      },
-
-      _calculateLeftMarginBaseline(){
-        var exampleImgStyles = this._getFirstImageBoundingClientRect();
-        return exampleImgStyles.left;
-
       },
 
       _getFirstImageBoundingClientRect: function(){
