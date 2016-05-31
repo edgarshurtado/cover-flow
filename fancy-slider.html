@@ -44,12 +44,14 @@ Example:
         background-color: black;
         height: 60vh;
 
+        transition: scrollLeft 1s;
+
       }
 
       .wrapper_inner {
-        width: 200vw;
         position: relative;
         height: 100%;
+        transform: translateX(-50px);
       }
 
       .wrapper_images{
@@ -67,6 +69,7 @@ Example:
       :host ::content img[focus]{
         opacity: 1;
         transform: scale(2, 2);
+        z-index: 1000;
       }
 
     </style>
@@ -84,7 +87,8 @@ Example:
       is: 'fancy-slider',
 
       properties: {
-        _baseline: Number
+        _baseline: Number,
+        _centerOfDisplay: Number
 
       },
 
@@ -111,6 +115,11 @@ Example:
 
         this._baseline = this._calculateBaseLine();
         this._centerOfDisplay = window.innerWidth / 2;
+        var imagesWrapperWidth = Polymer.dom(this.root).querySelector(".wrapper_images").getBoundingClientRect().width * 2;
+        Polymer.dom(this.root).querySelector(".wrapper_images").style.width = imagesWrapperWidth + "px";
+        var width = imagesWrapperWidth + window.innerWidth;
+        document.querySelector(".wrapper_inner").style.width = width + "px";
+        this._handleScroll();
       },
 
       detached: function() {
@@ -123,7 +132,10 @@ Example:
       // Element Behavior
 
       _handleScroll: function(){
+        this._selectCenterImg();
+      },
 
+      _selectCenterImg: function(){
         this._oldOnFocus = this._oldOnFocus || null;
 
         var horizontalSelectPosition = this._centerOfDisplay;
@@ -133,7 +145,10 @@ Example:
           this._toggleFocus(this._oldOnFocus);
           this._toggleFocus(elOnFocus);
           this._oldOnFocus = elOnFocus;
+          debugger;
+          this.$.wrapperOutter.scrollLeft = this._imgCenterPosition(elOnFocus);
         }
+
       },
 
       _toggleFocus: function(el){
@@ -147,6 +162,15 @@ Example:
       },
 
       // Helper functions
+
+      _imgCenterPosition: function(img){
+        var imgStyles = img.getBoundingClientRect();
+        var imgCenterXY = imgStyles.left + imgStyles.width / 2; // Obtain the position on the screen of the center of the img
+
+        var differenceToScroll = window.innerWidth / 2 - imgCenterXY;
+
+        return differenceToScroll;
+      },
 
 
       _calculateBaseLine: function(){
