@@ -145,8 +145,6 @@ Example:
           this._toggleFocus(this._oldOnFocus);
           this._toggleFocus(elOnFocus);
           this._oldOnFocus = elOnFocus;
-          debugger;
-          this.$.wrapperOutter.scrollLeft = this._imgCenterPosition(elOnFocus);
         }
 
       },
@@ -162,16 +160,6 @@ Example:
       },
 
       // Helper functions
-
-      _imgCenterPosition: function(img){
-        var imgStyles = img.getBoundingClientRect();
-        var imgCenterXY = imgStyles.left + imgStyles.width / 2; // Obtain the position on the screen of the center of the img
-
-        var differenceToScroll = window.innerWidth / 2 - imgCenterXY;
-
-        return differenceToScroll;
-      },
-
 
       _calculateBaseLine: function(){
         var exampleImgStyles = this._getFirstImageBoundingClientRect();
