@@ -112,14 +112,16 @@ Example:
         // visual state or active behavior (measuring sizes, beginning animations,
         // loading resources, etc).
 
-
-        this._baseline = this._calculateBaseLine();
-        this._centerOfDisplay = window.innerWidth / 2;
-        var imagesWrapperWidth = Polymer.dom(this.root).querySelector(".wrapper_images").getBoundingClientRect().width * 2;
-        Polymer.dom(this.root).querySelector(".wrapper_images").style.width = imagesWrapperWidth + "px";
-        var width = imagesWrapperWidth + window.innerWidth;
-        document.querySelector(".wrapper_inner").style.width = width + "px";
-        this._handleScroll();
+        this.addEventListener("mouseenter", function(el){ // This avoids errors when te slider is charged but not in
+                                                          // the display
+          this._baseline = this._calculateBaseLine();
+          this._centerOfDisplay = window.innerWidth / 2;
+          var imagesWrapperWidth = Polymer.dom(this.root).querySelector(".wrapper_images").getBoundingClientRect().width * 2;
+          Polymer.dom(this.root).querySelector(".wrapper_images").style.width = imagesWrapperWidth + "px";
+          var width = imagesWrapperWidth + window.innerWidth;
+          document.querySelector(".wrapper_inner").style.width = width + "px";
+          this._selectCenterImg();
+        },this);
       },
 
       detached: function() {
@@ -142,7 +144,9 @@ Example:
         var elOnFocus = document.elementFromPoint(horizontalSelectPosition, this._baseline);
 
         if(elOnFocus.nodeName === "IMG" && this._oldOnFocus !== elOnFocus){
-          this._toggleFocus(this._oldOnFocus);
+          if(this._oldOnFocus !== null){
+            this._toggleFocus(this._oldOnFocus);
+          }
           this._toggleFocus(elOnFocus);
           this._oldOnFocus = elOnFocus;
         }
