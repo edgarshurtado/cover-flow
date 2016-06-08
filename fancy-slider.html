@@ -36,34 +36,26 @@ Example:
         opacity: 0.2;
         transition: transform 0.5s;
 
+        float: left;
+        margin-right: 50px;
+
       }
 
       .wrapper_outter {
-        width: 100%;
+        width: 100vw;
         overflow-x: scroll;
         background-color: black;
         height: 60vh;
-
-        transition: scrollLeft 1s;
-
+        position: relative;
       }
 
       .wrapper_inner {
-        position: relative;
-        height: 100%;
-        transform: translateX(-50px);
-      }
-
-      .wrapper_images{
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 100vw;
-        height: 100%;
-        flex-direction: row;
+        position: absolute;
+        height: inherit;
+        /*transform: translateX(-50px);*/
         margin-left: auto;
         margin-right: auto;
-
+        width: 4000px;
       }
 
       :host ::content img[focus]{
@@ -75,9 +67,7 @@ Example:
     </style>
     <div class="wrapper_outter" id="wrapperOutter" on-scroll="_handleScroll">
       <div class="wrapper_inner">
-        <div class="wrapper_images">
-          <content id="images"></content>
-        </div>
+        <content id="images"></content>
       </div>
     </div>
   </template>
@@ -112,8 +102,10 @@ Example:
         // visual state or active behavior (measuring sizes, beginning animations,
         // loading resources, etc).
 
+
+
         this.addEventListener("mouseenter", function(el){ // This avoids errors when te slider is charged but not in
-                                                          // the display
+          // the display
           this._baseline = this._calculateBaseLine();
           this._centerOfDisplay = window.innerWidth / 2;
           var imagesWrapperWidth = Polymer.dom(this.root).querySelector(".wrapper_images").getBoundingClientRect().width * 2;
@@ -122,6 +114,9 @@ Example:
           document.querySelector(".wrapper_inner").style.width = width + "px";
           this._selectCenterImg();
         },this);
+
+
+        this._calculateImgWidth();
       },
 
       detached: function() {
@@ -172,6 +167,16 @@ Example:
 
       _getFirstImageBoundingClientRect: function(){
         return this.queryEffectiveChildren("img").getBoundingClientRect();
+      },
+
+      _calculateImgWidth: function(){
+        var images = Polymer.dom(this).children;
+        console.log(images);
+        var totalWidth = 0;
+        Array.prototype.forEach.call(images, function(image){
+          totalWidth += image.getBoundingClientRect().width;
+        });
+        console.log(totalWidth);
       }
 
     });
