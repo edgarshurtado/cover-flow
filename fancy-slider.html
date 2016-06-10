@@ -52,10 +52,6 @@ Example:
       .wrapper_inner {
         position: absolute;
         height: inherit;
-        /*transform: translateX(-50px);*/
-        margin-left: auto;
-        margin-right: auto;
-        width: 4000px;
       }
 
       :host ::content img[focus]{
@@ -66,7 +62,7 @@ Example:
 
     </style>
     <div class="wrapper_outter" id="wrapperOutter" on-scroll="_handleScroll">
-      <div class="wrapper_inner">
+      <div id="wrapperInner" class="wrapper_inner">
         <content id="images"></content>
       </div>
     </div>
@@ -116,7 +112,7 @@ Example:
         },this);
 
 
-        this._calculateImgWidth();
+        this.$.wrapperInner.style.width = this._calculateImgWidth() + "px";
       },
 
       detached: function() {
@@ -171,12 +167,17 @@ Example:
 
       _calculateImgWidth: function(){
         var images = Polymer.dom(this).children;
-        console.log(images);
         var totalWidth = 0;
         Array.prototype.forEach.call(images, function(image){
           totalWidth += image.getBoundingClientRect().width;
         });
-        console.log(totalWidth);
+
+        var imgMargin = window.getComputedStyle(images[0]).marginRight; // get the margin right for the images
+        imgMargin =  + imgMargin.slice(0, imgMargin.length -2);
+
+        totalWidth += imgMargin * images.length;
+
+        return  totalWidth;
       }
 
     });
