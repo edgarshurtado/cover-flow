@@ -31,7 +31,7 @@ Example:
   <template>
     <style>
       :host ::content img{
-        height: 50%;
+        height: 100%;
         display: block;
         opacity: 0.2;
         transition: transform 0.5s;
@@ -45,25 +45,36 @@ Example:
         width: 100vw;
         overflow-x: scroll;
         background-color: black;
-        height: 60vh;
+        height: 100%;
         position: relative;
       }
 
       .wrapper_inner {
+        position: relative;
+        height: 100%;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .margin-div {
         position: absolute;
-        height: inherit;
+        height: 60%;
+        top: 50%;
+        transform: translateY(-50%);
       }
 
       :host ::content img[focus]{
         opacity: 1;
-        transform: scale(2, 2);
+        transform: scale(1.2, 1.2);
         z-index: 1000;
       }
 
     </style>
     <div class="wrapper_outter" id="wrapperOutter" on-scroll="_handleScroll">
-      <div id="wrapperInner" class="wrapper_inner">
-        <content id="images"></content>
+      <div id="marginDiv" class="margin-div">
+        <div id="wrapperInner" class="wrapper_inner">
+          <content id="images"></content>
+        </div>
       </div>
     </div>
   </template>
@@ -87,6 +98,7 @@ Example:
         //
         // This is the point where you should make modifications to the DOM (when
         // necessary), or kick off any processes the element wants to perform.
+
       },
 
 
@@ -113,6 +125,11 @@ Example:
 
 
         this.$.wrapperInner.style.width = this._calculateImgWidth() + "px";
+
+        var marginDivWidth = this.$.wrapperInner.style.width;
+        marginDivWidth = + marginDivWidth.slice(0, marginDivWidth.length -2) + window.innerWidth/2;
+        this.$.marginDiv.style.width = marginDivWidth + "px";
+
       },
 
       detached: function() {
