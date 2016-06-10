@@ -110,26 +110,18 @@ Example:
         // visual state or active behavior (measuring sizes, beginning animations,
         // loading resources, etc).
 
-
-
-        this.addEventListener("mouseenter", function(el){ // This avoids errors when te slider is charged but not in
-          // the display
-          this._baseline = this._calculateBaseLine();
-          this._centerOfDisplay = window.innerWidth / 2;
-          var imagesWrapperWidth = Polymer.dom(this.root).querySelector(".wrapper_images").getBoundingClientRect().width * 2;
-          Polymer.dom(this.root).querySelector(".wrapper_images").style.width = imagesWrapperWidth + "px";
-          var width = imagesWrapperWidth + window.innerWidth;
-          document.querySelector(".wrapper_inner").style.width = width + "px";
-          this._selectCenterImg();
-        },this);
-
+        this._windowCenter = window.innerWidth / 2;
 
         this.$.wrapperInner.style.width = this._calculateImgWidth() + "px";
 
         var marginDivWidth = this.$.wrapperInner.style.width;
-        marginDivWidth = + marginDivWidth.slice(0, marginDivWidth.length -2) + window.innerWidth/2;
+        marginDivWidth = + marginDivWidth.slice(0, marginDivWidth.length -2) + this._windowCenter;
         this.$.marginDiv.style.width = marginDivWidth + "px";
 
+
+        // Focus first img
+//        this._oldOnFocus = Polymer.dom(this).children[0];
+        this._toggleFocus(Polymer.dom(this).children[0]);
       },
 
       detached: function() {
@@ -141,16 +133,17 @@ Example:
 
       // Element Behavior
 
-      _handleScroll: function(){
-        this._selectCenterImg();
+      _handleScroll: function(ev){
+        var scrollCount = this.$.wrapperOutter.scrollLeft - this.scrollLast;
+        if(scrollCount > this._oldOnFocusWidth + 50){
+          this._selectNext();
+        }
       },
 
-      _selectCenterImg: function(){
+      _selectCenterImg: function(scrollEv){
+
         this._oldOnFocus = this._oldOnFocus || null;
-
-        var horizontalSelectPosition = this._centerOfDisplay;
-        var elOnFocus = document.elementFromPoint(horizontalSelectPosition, this._baseline);
-
+        var elOnFocus = document.elementFromPoint(this._windowCenter, this._baseline);
         if(elOnFocus.nodeName === "IMG" && this._oldOnFocus !== elOnFocus){
           if(this._oldOnFocus !== null){
             this._toggleFocus(this._oldOnFocus);
@@ -158,7 +151,12 @@ Example:
           this._toggleFocus(elOnFocus);
           this._oldOnFocus = elOnFocus;
         }
+      },
 
+      _selectNext: function(){
+        var actualFocus = this._oldOnFocus;
+        this._toggleFocus(actualFocus);
+        this._toggleFocus(actualFocus.nextElementSibling);
       },
 
       _toggleFocus: function(el){
@@ -167,19 +165,17 @@ Example:
             Polymer.dom(el).removeAttribute("focus");
           }else if(!el.hasAttribute("focus")){
             Polymer.dom(el).setAttribute("focus", "");
+            this._oldOnFocus = el;
+            this._oldOnFocusWidth = el.getBoundingClientRect().width;
+            this.scrollLast = this.$.wrapperOutter.scrollLeft;
           }
         }
       },
 
       // Helper functions
-
       _calculateBaseLine: function(){
-        var exampleImgStyles = this._getFirstImageBoundingClientRect();
-        return exampleImgStyles.top + exampleImgStyles.height/2;
-      },
-
-      _getFirstImageBoundingClientRect: function(){
-        return this.queryEffectiveChildren("img").getBoundingClientRect();
+        var selfStyles = this.getBoundingClientRect();
+        return selfStyles.top + selfStyles.height/2;
       },
 
       _calculateImgWidth: function(){
@@ -195,6 +191,11 @@ Example:
         totalWidth += imgMargin * images.length;
 
         return  totalWidth;
+      },
+
+      _centerOfImg: function(img){
+        var imgProperties = img.getBoundingClientRect();
+        return imgProperties.left + (imgProperties.width / 2);
       }
 
     });
