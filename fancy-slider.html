@@ -47,7 +47,7 @@ Example:
 
       .wrapper_outter {
         width: 100vw;
-        overflow-x: scroll;
+        overflow-x: hidden;
         background-color: black;
         height: 100%;
         position: relative;
@@ -73,12 +73,24 @@ Example:
         z-index: 1000;
       }
 
+      .buttons {
+        position: absolute;
+        display: inline-block;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 5%;
+        color: white;
+      }
+
     </style>
-    <div class="wrapper_outter" id="wrapperOutter" on-scroll="_handleScroll">
+    <div class="wrapper_outter" id="wrapperOutter">
       <div id="marginDiv" class="margin-div">
         <div id="wrapperInner" class="wrapper_inner">
           <content id="images"></content>
         </div>
+      </div>
+      <div class="buttons">
+          <span>&lt;</span><span>&gt;</span>
       </div>
     </div>
   </template>
@@ -138,16 +150,6 @@ Example:
       },
 
       // Element Behavior
-
-      _handleScroll: function(ev){
-        var scrollCount = this.$.wrapperOutter.scrollLeft - (this.scrollLast || 0);
-        if(scrollCount > this._oldOnFocusWidth){
-          console.log("Scroll Last :" + this.scrollLast);
-          console.info("Distance of last scroll: " + scrollCount);
-          console.log("Total scroll: " + this.$.wrapperOutter.scrollLeft);
-          this._selectNext();
-        }
-      },
 
       _selectCenterImg: function(scrollEv){
 
