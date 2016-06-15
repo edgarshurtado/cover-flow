@@ -41,6 +41,10 @@ Example:
 
       }
 
+      :host ::content img:last-of-type{ /* Remove margin from the last img*/
+        margin-right: 0;
+      }
+
       .wrapper_outter {
         width: 100vw;
         overflow-x: scroll;
@@ -112,16 +116,18 @@ Example:
 
         this._windowCenter = window.innerWidth / 2;
 
-        this.$.wrapperInner.style.width = this._calculateImgWidth() + "px";
+        var imgsTotalWidth = this._calculateImgWidth();
+        this.$.wrapperInner.style.width = imgsTotalWidth + "px";
 
-        var marginDivWidth = this.$.wrapperInner.style.width;
-        marginDivWidth = + marginDivWidth.slice(0, marginDivWidth.length -2) + this._windowCenter;
+        var marginDivWidth = imgsTotalWidth + window.innerWidth - Polymer.dom(this).children[0].getBoundingClientRect().width;
         this.$.marginDiv.style.width = marginDivWidth + "px";
 
 
         // Focus first img
 //        this._oldOnFocus = Polymer.dom(this).children[0];
-        this._toggleFocus(Polymer.dom(this).children[0]);
+        var firstFocus = Polymer.dom(this).children[0];
+        this.scrollLast = firstFocus.getBoundingClientRect().width / 2;
+        this._toggleFocus(firstFocus);
       },
 
       detached: function() {
@@ -134,8 +140,11 @@ Example:
       // Element Behavior
 
       _handleScroll: function(ev){
-        var scrollCount = this.$.wrapperOutter.scrollLeft - this.scrollLast;
-        if(scrollCount > this._oldOnFocusWidth + 50){
+        var scrollCount = this.$.wrapperOutter.scrollLeft - (this.scrollLast || 0);
+        if(scrollCount > this._oldOnFocusWidth){
+          console.log("Scroll Last :" + this.scrollLast);
+          console.info("Distance of last scroll: " + scrollCount);
+          console.log("Total scroll: " + this.$.wrapperOutter.scrollLeft);
           this._selectNext();
         }
       },
@@ -182,15 +191,11 @@ Example:
         var images = Polymer.dom(this).children;
         var totalWidth = 0;
         Array.prototype.forEach.call(images, function(image){
-          totalWidth += image.getBoundingClientRect().width;
+          var imgBoundingClientRect = image.getBoundingClientRect();
+          totalWidth += imgBoundingClientRect.width + 50; // the 50 is for the margin in each img
         });
 
-        var imgMargin = window.getComputedStyle(images[0]).marginRight; // get the margin right for the images
-        imgMargin =  + imgMargin.slice(0, imgMargin.length -2);
-
-        totalWidth += imgMargin * images.length;
-
-        return  totalWidth;
+        return  totalWidth - 50; // delete last margin
       },
 
       _centerOfImg: function(img){
