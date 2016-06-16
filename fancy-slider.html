@@ -30,6 +30,9 @@ Example:
 <dom-module id="fancy-slider">
   <template>
     <style>
+      :host {
+        position: relative;
+      }
       :host ::content img{
         height: 100%;
         display: block;
@@ -76,10 +79,11 @@ Example:
       .buttons {
         position: absolute;
         display: inline-block;
-        left: 50%;
+        width: auto;
+        left: 50vw;
         transform: translateX(-50%);
-        bottom: 5%;
         color: white;
+        top: -50px;
       }
 
     </style>
@@ -89,9 +93,9 @@ Example:
           <content id="images"></content>
         </div>
       </div>
-      <div class="buttons">
-          <span>&lt;</span><span on-tap="_selectNext">&gt;</span>
-      </div>
+    </div>
+    <div class="buttons">
+      <span>&lt;</span><span on-tap="_selectNext">&gt;</span>
     </div>
   </template>
 
