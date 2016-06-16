@@ -164,9 +164,11 @@ Example:
       },
 
       _selectNext: function(){
-        var actualFocus = this._oldOnFocus;
-        this._toggleFocus(actualFocus);
-        this._toggleFocus(actualFocus.nextElementSibling);
+        var formerFocus= this._oldOnFocus;
+        var newFocus = formerFocus.nextElementSibling;
+        this._toggleFocus(formerFocus);
+        this._toggleFocus(newFocus);
+        this.$.wrapperOutter.scrollLeft += this._centerOfImg(newFocus) - this._centerOfImg(formerFocus);
       },
 
       _toggleFocus: function(el){
