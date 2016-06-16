@@ -90,7 +90,7 @@ Example:
         </div>
       </div>
       <div class="buttons">
-          <span>&lt;</span><span>&gt;</span>
+          <span>&lt;</span><span on-tap="_selectNext">&gt;</span>
       </div>
     </div>
   </template>
@@ -136,7 +136,6 @@ Example:
 
 
         // Focus first img
-//        this._oldOnFocus = Polymer.dom(this).children[0];
         var firstFocus = Polymer.dom(this).children[0];
         this.scrollLast = firstFocus.getBoundingClientRect().width / 2;
         this._toggleFocus(firstFocus);
@@ -177,8 +176,6 @@ Example:
           }else if(!el.hasAttribute("focus")){
             Polymer.dom(el).setAttribute("focus", "");
             this._oldOnFocus = el;
-            this._oldOnFocusWidth = el.getBoundingClientRect().width;
-            this.scrollLast = this.$.wrapperOutter.scrollLeft;
           }
         }
       },
