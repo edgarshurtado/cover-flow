@@ -86,6 +86,10 @@ Example:
         top: -50px;
       }
 
+      .buttons > span {
+        cursor: pointer;
+      }
+
     </style>
     <div class="wrapper_outter" id="wrapperOutter">
       <div id="marginDiv" class="margin-div">
@@ -95,7 +99,7 @@ Example:
       </div>
     </div>
     <div class="buttons">
-      <span>&lt;</span><span on-tap="_selectNext">&gt;</span>
+      <span on-tap="_selectPrevious">&lt;</span><span on-tap="_selectNext">&gt;</span>
     </div>
   </template>
 
@@ -167,12 +171,24 @@ Example:
         }
       },
 
-      _selectNext: function(){
+      _changeSlider: function(dir){
         var formerFocus= this._oldOnFocus;
-        var newFocus = formerFocus.nextElementSibling || Polymer.dom(this).children[0];
+        if(dir >= 0){
+          var newFocus = formerFocus.nextElementSibling || Polymer.dom(this).children[0];
+        }else if(dir < 0){
+          var newFocus = formerFocus.previousElementSibling || Polymer.dom(this).children[Polymer.dom(this).children.length - 1];
+        }
         this._toggleFocus(formerFocus);
         this._toggleFocus(newFocus);
         this.$.wrapperOutter.scrollLeft += this._centerOfImg(newFocus) - this._centerOfImg(formerFocus);
+      },
+
+      _selectNext: function(){
+        this._changeSlider(1);
+      },
+
+      _selectPrevious: function(){
+         this._changeSlider(-1);
       },
 
       _toggleFocus: function(el){
