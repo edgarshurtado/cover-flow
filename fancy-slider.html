@@ -169,7 +169,7 @@ Example:
 
       _selectNext: function(){
         var formerFocus= this._oldOnFocus;
-        var newFocus = formerFocus.nextElementSibling;
+        var newFocus = formerFocus.nextElementSibling || Polymer.dom(this).children[0];
         this._toggleFocus(formerFocus);
         this._toggleFocus(newFocus);
         this.$.wrapperOutter.scrollLeft += this._centerOfImg(newFocus) - this._centerOfImg(formerFocus);
