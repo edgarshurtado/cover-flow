@@ -10,6 +10,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../polymer/polymer.html">
 <link rel="stylesheet" href="../font-awesome/css/font-awesome.min.css">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
 
 <!--
 An element providing a solution to no problem in particular.
@@ -107,8 +109,10 @@ Example:
       </div>
     </div>
     <div class="buttons">
-      <i class="fa fa-chevron-circle-left" on-tap="_selectPrevious"></i>
-      <i class="fa fa-chevron-circle-right" on-tap="_selectNext"></i>
+      <paper-icon-button icon="favorite" style="color: red;"></paper-icon-button>
+      <paper-icon-button icon="star"></paper-icon-button>
+      <!--<i class="fa fa-chevron-circle-left" on-tap="_selectPrevious"></i>-->
+      <!--<i class="fa fa-chevron-circle-right" on-tap="_selectNext"></i>-->
     </div>
   </template>
 
