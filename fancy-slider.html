@@ -10,7 +10,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../polymer/polymer.html">
 <link rel="stylesheet" href="../font-awesome/css/font-awesome.min.css">
-<link rel="import" href="../paper-icon-button/paper-icon-button.html.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../iron-icons/iron-icons.html">
 
 <!--
@@ -96,9 +96,15 @@ Example:
         color: var(--fs-buttons-color, white);
       }
 
-      .buttons > i:hover {
-        color: var(--fs-buttons-color, red);
+      paper-icon-button {
+        --paper-icon-button-ink-color: red;
       }
+
+      paper-icon-button:hover {
+        background-color: rgba(255,125,125, 0.5);
+        border-radius: 25px;
+      }
+
 
     </style>
     <div class="wrapper_outter" id="wrapperOutter">
@@ -109,8 +115,8 @@ Example:
       </div>
     </div>
     <div class="buttons">
-      <paper-icon-button icon="favorite" style="color: red;"></paper-icon-button>
-      <paper-icon-button icon="star"></paper-icon-button>
+      <paper-icon-button icon="arrow-back" on-tap="_selectPrevious"></paper-icon-button>
+      <paper-icon-button icon="arrow-forward" on-tap="_selectNext"></paper-icon-button>
       <!--<i class="fa fa-chevron-circle-left" on-tap="_selectPrevious"></i>-->
       <!--<i class="fa fa-chevron-circle-right" on-tap="_selectNext"></i>-->
     </div>
