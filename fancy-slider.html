@@ -9,6 +9,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="../polymer/polymer.html">
+<link rel="stylesheet" href="../font-awesome/css/font-awesome.min.css">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
 
 <!--
 An element providing a solution to no problem in particular.
@@ -30,6 +33,9 @@ Example:
 <dom-module id="fancy-slider">
   <template>
     <style>
+      :host {
+        position: relative;
+      }
       :host ::content img{
         height: 100%;
         display: block;
@@ -41,9 +47,13 @@ Example:
 
       }
 
+      :host ::content img:last-of-type{ /* Remove margin from the last img*/
+        margin-right: 0;
+      }
+
       .wrapper_outter {
         width: 100vw;
-        overflow-x: scroll;
+        overflow-x: hidden;
         background-color: black;
         height: 100%;
         position: relative;
@@ -69,13 +79,46 @@ Example:
         z-index: 1000;
       }
 
+      .buttons {
+        position: absolute;
+        width: 100px;
+        left: 50vw;
+        transform: translateX(-50%);
+        color: white;
+        top: -50px;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .buttons > i {
+        cursor: pointer;
+        font-size: 2em;
+        color: var(--fs-buttons-color, white);
+      }
+
+      paper-icon-button {
+        --paper-icon-button-ink-color: red;
+      }
+
+      paper-icon-button:hover {
+        background-color: rgba(255,125,125, 0.5);
+        border-radius: 25px;
+      }
+
+
     </style>
-    <div class="wrapper_outter" id="wrapperOutter" on-scroll="_handleScroll">
+    <div class="wrapper_outter" id="wrapperOutter">
       <div id="marginDiv" class="margin-div">
         <div id="wrapperInner" class="wrapper_inner">
           <content id="images"></content>
         </div>
       </div>
+    </div>
+    <div class="buttons">
+      <paper-icon-button icon="arrow-back" on-tap="_selectPrevious"></paper-icon-button>
+      <paper-icon-button icon="arrow-forward" on-tap="_selectNext"></paper-icon-button>
+      <!--<i class="fa fa-chevron-circle-left" on-tap="_selectPrevious"></i>-->
+      <!--<i class="fa fa-chevron-circle-right" on-tap="_selectNext"></i>-->
     </div>
   </template>
 
@@ -112,16 +155,17 @@ Example:
 
         this._windowCenter = window.innerWidth / 2;
 
-        this.$.wrapperInner.style.width = this._calculateImgWidth() + "px";
+        var imgsTotalWidth = this._calculateImgWidth();
+        this.$.wrapperInner.style.width = imgsTotalWidth + "px";
 
-        var marginDivWidth = this.$.wrapperInner.style.width;
-        marginDivWidth = + marginDivWidth.slice(0, marginDivWidth.length -2) + this._windowCenter;
+        var marginDivWidth = imgsTotalWidth + window.innerWidth - Polymer.dom(this).children[0].getBoundingClientRect().width;
         this.$.marginDiv.style.width = marginDivWidth + "px";
 
 
         // Focus first img
-//        this._oldOnFocus = Polymer.dom(this).children[0];
-        this._toggleFocus(Polymer.dom(this).children[0]);
+        var firstFocus = Polymer.dom(this).children[0];
+        this.scrollLast = firstFocus.getBoundingClientRect().width / 2;
+        this._toggleFocus(firstFocus);
       },
 
       detached: function() {
@@ -132,13 +176,6 @@ Example:
       },
 
       // Element Behavior
-
-      _handleScroll: function(ev){
-        var scrollCount = this.$.wrapperOutter.scrollLeft - this.scrollLast;
-        if(scrollCount > this._oldOnFocusWidth + 50){
-          this._selectNext();
-        }
-      },
 
       _selectCenterImg: function(scrollEv){
 
@@ -153,10 +190,24 @@ Example:
         }
       },
 
+      _changeSlider: function(dir){
+        var formerFocus= this._oldOnFocus;
+        if(dir >= 0){
+          var newFocus = formerFocus.nextElementSibling || Polymer.dom(this).children[0];
+        }else if(dir < 0){
+          var newFocus = formerFocus.previousElementSibling || Polymer.dom(this).children[Polymer.dom(this).children.length - 1];
+        }
+        this._toggleFocus(formerFocus);
+        this._toggleFocus(newFocus);
+        this.$.wrapperOutter.scrollLeft += this._centerOfImg(newFocus) - this._centerOfImg(formerFocus);
+      },
+
       _selectNext: function(){
-        var actualFocus = this._oldOnFocus;
-        this._toggleFocus(actualFocus);
-        this._toggleFocus(actualFocus.nextElementSibling);
+        this._changeSlider(1);
+      },
+
+      _selectPrevious: function(){
+         this._changeSlider(-1);
       },
 
       _toggleFocus: function(el){
@@ -166,8 +217,6 @@ Example:
           }else if(!el.hasAttribute("focus")){
             Polymer.dom(el).setAttribute("focus", "");
             this._oldOnFocus = el;
-            this._oldOnFocusWidth = el.getBoundingClientRect().width;
-            this.scrollLast = this.$.wrapperOutter.scrollLeft;
           }
         }
       },
@@ -182,15 +231,11 @@ Example:
         var images = Polymer.dom(this).children;
         var totalWidth = 0;
         Array.prototype.forEach.call(images, function(image){
-          totalWidth += image.getBoundingClientRect().width;
+          var imgBoundingClientRect = image.getBoundingClientRect();
+          totalWidth += imgBoundingClientRect.width + 50; // the 50 is for the margin in each img
         });
 
-        var imgMargin = window.getComputedStyle(images[0]).marginRight; // get the margin right for the images
-        imgMargin =  + imgMargin.slice(0, imgMargin.length -2);
-
-        totalWidth += imgMargin * images.length;
-
-        return  totalWidth;
+        return  totalWidth - 50; // delete last margin
       },
 
       _centerOfImg: function(img){
